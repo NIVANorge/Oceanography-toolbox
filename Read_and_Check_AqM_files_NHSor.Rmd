@@ -1,0 +1,202 @@
+---
+title: "Rean and check a file downloaded from Aquamonitor"
+author: "Helene Frigstad"
+date: "18 february 2021"
+output: html_notebook
+---
+
+## 0. Libraries
+```{r}
+library(tidyverse)
+library(readxl)
+#library(pander)
+#library(scales)
+#library(gridExtra)
+#library(grid)
+#library (caTools)
+#install.packages("xlsx")
+#library(xlsx)
+library (lubridate)
+
+```
+
+
+## 1. Folders and files    
+Content of folders (see code)  
+* R markdown must have working directory in same location as the script file is stored, ie. put data and script in same overall folder
+```{r}
+#clear workspace if needed
+#ls()
+#rm(list = ls())
+
+# sjekke filer i folder "Datasett"
+dir("Datasett")
+```
+
+## 2. Read and clean files
+
+### a. read
+* Reads file downloaded from Aquamonitor 15.02.2022, excel-file was cleaned before reading into R (ToR.xlsx), see the  the Dir command above for the two excel files 
+* In the ToR version I did following changes: 1. deleted row with units (paste into script below) and have all column heads in one top line. 2. Separate Date into 4 separate columns (day, Month, Year, Time), using the text-to-columns in excel. 3. Removed all values below detection limit (ex Klfa < 0.16), by using excel replace (find: <*, replace: (just a space))
+```{r}
+#? read_excel
+df <- read_excel("Datasett/AqM_data_2022_02_15_12_20_ToR.xlsx", "WaterChemistry", col_names = T, col_types = c("text", "text", "text", "text", "text", "text","text","text","text", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))  
+
+
+#units (pasted in from excel file)
+#DOC	Fluorescens	KlfA	NH4-N	Nitrogen part	NO3+NO2-N	O2	O2	O2 (metning)	PO4-P	POC	P-PO4	Salinitet	SGR - Suspendert gløderest	Siktdyp	SiO2	STS	Temperatur	Tetthetsanomali	TOTN	TOTP	TOTP_P	TSM	Turbiditet
+#mg/L C	µg/l	µg/l	µg/l	µg/l N	µg/l	mg/L	ml/l	%	µg/l	µg/l C	µg/l P		mg/l	m	mg/l	mg/l	C	kg/m3	µg/l	µg/l	µg/l P	mg/l	FNU
+
+
+#lage datoobjekt fra de tre kolonnene Year, Month, Day
+df$Date <- as.Date (paste (df$Year, df$Month, df$Day, sep ="-"))
+
+#summary (df)
+#tr(df)
+
+```
+
+
+### b. clean
+```{r}
+
+# stationID is consistent across projects and time (this can vary for different projects) 
+df$StationId <- as.factor (df$StationId)
+#(as.factor (df$StationId))
+#df$StationId <- as.factor (df$StationId)
+#levels(df$StationId) #"63018" (VT71) "68915" (VT16) "68936" (VT3) "68938" (VR54) "68992" (VR21) "70953" ()
+
+# rename StationID from numeric to station code
+sel <- levels(df$StationId) == "63018"; sum(sel)
+levels(df$StationId)[sel] <- "VT71"
+sel <- levels(df$StationId) == "68936"; sum(sel)
+levels(df$StationId)[sel] <- "VT3"
+sel <- levels(df$StationId) == "68938"; sum(sel)
+levels(df$StationId)[sel] <- "VR54"
+sel <- levels(df$StationId) == "68915"; sum(sel)
+levels(df$StationId)[sel] <- "VT16"
+sel <- levels(df$StationId) == "68992"; sum(sel)
+levels(df$StationId)[sel] <- "VR21"
+sel <- levels(df$StationId) == "70953"; sum(sel)
+levels(df$StationId)[sel] <- "VR58"
+
+# order stations for ggplot, here south to north
+df$StationId <- factor(df$StationId, levels = c("VT3", "VT16", "VT71", "VR54", "VR58", "VR21"))
+
+#include only data from 2017 to 2021 (or just 2020?)
+#range (df$Date)
+df <- subset(df, Date >= "2017-01-01" &  Date <= "2021-12-31")
+
+# unique values? removed duplicated rows
+df <- distinct (df)
+
+# This is only relevant for ApN stations that often have O2 in mg/L... 
+# str(df)
+# # look at no of obs for variables pr year
+# tb <- df %>% 
+#   gather("Variable", Value, Temperature:DIN) %>%
+#   filter(!is.na(Value)) %>%
+#   xtabs(~Year + Variable, .)
+# pandoc.table(tb, style = "rmarkdown"
+
+# Coverting O2, NB! do not do this now, see if necessary later
+# VR54 is given in mg/L O2, while others in ml/L
+# df %>%
+#   gather("Variable", "Value", O2_mg, O2_ml) %>%
+#   ggplot(aes(Date, Value)) +
+#     geom_line() +
+#     facet_grid(~Variable)
+# 
+# #To convert DO from mg/L to ml/L, divide by 1.4276.
+# df <- df %>%
+#   mutate(StationId = as.character (StationId)) %>%
+#   mutate (conv_O2_ml = df$O2_mg/1.4276) %>%
+#   mutate(O2_ml = ifelse(StationId == "VR54", conv_O2_ml, O2_ml)) %>%
+#   mutate(StationId = factor (StationId))%>%
+#   select (-conv_O2_ml, -O2_mg)
+# 
+# #check that is correct
+# df %>%
+#   gather("Variable", "Value", O2_mg, O2_ml, conv_O2_ml) %>%
+#   ggplot(aes(Date, Value)) +
+#     geom_line() +
+#     facet_grid(StationId~Variable)
+
+
+# keep only relevant cols and rename
+#str(df)
+df_sel <-  select (df, StationId, Date,  Depth1,  Depth2, Salinitet, Temperatur, Siktdyp, Turbiditet, DOC, KlfA, O2_mg, O2_ml, NO3_NO2, NH4, PO4, SiO2, TOTN, TOTP, POC, PN, PP, TSM)
+#df_sel <- rename(df_sel, Salinitet = Saltholdighet)
+
+# remove the two high DOC concentrations (see below), but retain all rows that have NA
+df_sel2 <- df_sel %>% filter((DOC < 5)  %>% replace_na(TRUE))
+
+
+#remove duplication of rows due to multiple projects
+df_sel3 <- distinct (df_sel2)
+
+#str(df_sel)
+
+```
+
+## 2. Exploratory plots 
+
+### a. Boxplots
+```{r}
+# look at ranges
+ggplot(df, aes(DOC, fill = StationId)) + 
+  geom_boxplot() 
+
+#Use this if you want to save, notice that have Figures/... to save it in the right folder under the Oceanography-toolbox main folder
+#ggsave ("Figures/Boxplot_DOC_fullrange.png", width = 8, height = 6, dpi=500)
+
+
+ggplot(df_sel2, aes(DOC, fill = StationId)) + 
+  geom_boxplot() 
+
+#ggsave ("Figures/Boxplot_DOC_below5.png", width = 8, height = 6, dpi=500)
+
+ggplot(df_sel2, aes(Salinitet, fill = StationId)) + 
+  geom_boxplot() 
+
+ggplot(df_sel2, aes(Temperatur, fill = StationId)) + 
+  geom_boxplot() 
+
+ggplot(df_sel2, aes(NH4, fill = StationId)) + 
+  geom_boxplot() 
+
+ggplot(df_sel2, aes(TSM, fill = StationId)) + 
+  geom_boxplot() 
+
+#ggsave ("Figures/Boxplot_TSM.png", width = 8, height = 6, dpi=500)
+
+ggplot(df_sel2, aes(POC, fill = StationId)) + 
+  geom_boxplot() 
+
+#ggsave ("Figures/Boxplot_POC.png", width = 8, height = 6, dpi=500)
+
+# one high obs of 270 for VR54 - remove above 100?
+ggplot(df_sel2, aes(PN, fill = StationId)) + 
+  geom_boxplo
+  geom_boxplot() 
+
+
+
+
+```
+
+## 3. Save
+```{r}
+
+# on my computer, this is the location of the folder to save datasets in: C:\Data\Helene_Work\Oceanography-toolbox\Oceanography-toolboxC:/Data/Helene_Work/OKOKYST_2021_25/OKOKYST-Klima/Datasett
+
+# tab-delimited text file 
+write.table(df_sel3, "Datasett/OKOKYST_data_cleaned.txt", sep="\t")
+# comma separated
+write.csv(df_sel3, file = "Datasett/OKOKYST_data_cleaned.csv")
+
+```				 			
+
+
+
+
