@@ -1,5 +1,5 @@
 ---
-title: "Rean and check a file downloaded from Aquamonitor Okokyst Nordsjoen2"
+title: "Rean and check a file downloaded from Aquamonitor Okokyst Nordsjoen"
 author: "Helene Frigstad"
 date: "18 february 2021"
 output: html_notebook
