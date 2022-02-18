@@ -190,17 +190,7 @@ ggplot(df_sel2, aes(PN, fill = StationId)) +
 
 # on my computer, this is the location of the folder to save datasets in: C:\Data\Helene_Work\Oceanography-toolbox\Oceanography-toolboxC:/Data/Helene_Work/OKOKYST_2021_25/OKOKYST-Klima/Datasett
 
-# tab-delimited text filet() 
-
-#ggsave ("Figures/Boxplot_PN.png", width = 8, height = 6, dpi=500)
-
-# one high obs of above 25 for VR54 - remove above 15?
-ggplot(df_sel2, aes(PP, fill = StationId)) + 
-  geom_boxplot() 
-
-#ggsave ("Figures/Boxplot_PP.png", width = 8, height = 6, dpi=500)
-
-ggplot(df_sel, aes(NO3_NO2, fill = StationId)) + 
+# tab-delimited text file 
 write.table(df_sel3, "Datasett/OKOKYST_data_cleaned.txt", sep="\t")
 # comma separated
 write.csv(df_sel3, file = "Datasett/OKOKYST_data_cleaned.csv")
