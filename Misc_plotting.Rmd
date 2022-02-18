@@ -1,0 +1,357 @@
+---
+title: "Plotting/analyses of ØKOKYST FerryBox"
+author: "Helene Frigstad"
+date: "15 feb 2022"
+output: html_notebook
+
+---
+
+* NB!!! this scripts has different code for making various plots, these are NOT adapted to this dataset, and needs to be adjusted to fit. Just included in case there can be some useful code to adapt for different purposes
+
+## 0. Libraries
+```{r}
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(lubridate)
+library(readxl)
+library(tidyr)
+library(RColorBrewer)
+library(patchwork) # for arranging plots in panels
+# RColorBrewer::display.brewer.all()
+```
+
+
+## 1. Read and clean files
+### a. read
+* this file is produced in script "Read_and_check_OKOKYST_AqM_files.Rmd"
+```{r}
+
+# clear workspace
+#rm(list = ls())
+
+dir("Datasett")
+
+df <- read.delim ("Datasett/OKOKYST_Klima_cleaned.txt")
+
+#units
+#DOC	Fluorescens	KlfA	NH4-N	Nitrogen part	NO3+NO2-N	O2	O2	O2 (metning)	PO4-P	POC	P-PO4	Salinitet	SGR - Suspendert gløderest	Siktdyp	SiO2	STS	Temperatur	Tetthetsanomali	TOTN	TOTP	TOTP_P	TSM	Turbiditet
+#mg/L C	µg/l	µg/l	µg/l	µg/l N	µg/l	mg/L	ml/l	%	µg/l	µg/l C	µg/l P		mg/l	m	mg/l	mg/l	C	kg/m3	µg/l	µg/l	µg/l P	mg/l	FNU
+
+# convert back to Date
+df$Date <- as.Date(df$Date)
+#str(df)
+
+# station naming
+df$StationId <- as.factor (df$StationId)
+#order stations along coastline for ggplot
+df$StationId <- factor(df$StationId, levels = c("VT3", "VT16", "VT71", "VR54", "VR58", "VR21"))
+
+```
+
+## 2. Plots
+
+### a. Set common options for ggplot
+```{r}
+theme_set(theme_minimal())
+
+# Set date axis limits c(min, max)
+# range (df1$Date)
+# min <- as.Date("2017-12-01")
+# max <- as.Date("2020-11-30")
+#p + scale_x_date(limits = c(min, max))
+
+
+str (df)
+```
+
+
+### b. Plots pr variable
+```{r}
+#str(df)
+
+df %>%
+  ggplot(aes(Date, DOC)) + 
+    geom_point() +
+    facet_wrap(~StationId, ncol=2) +
+      labs(title = "", x = "", y = "DOC (mg/L)") +
+        scale_x_date(date_breaks = "4 month", date_labels =  "%m-%y")+
+        theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggsave ("Figures/DOC_pr_station.png", width = 8, height = 6, dpi=500)
+
+
+```
+
+### b. Plots pr station
+
+```{r}
+str(df)
+#levels (df$StationCode)
+#"VT4"  "VT12" "VT72" "VT23" "VT45" "VT22" "VT80" "VR25" "VR23" "VT76"
+
+df %>%
+  gather("Var", "Concentration", DOC:TOTN) %>%
+  mutate(Var=factor(Var, levels = c( "Sal_FB","Temp_FB", "DOC", "KlfA", "NO3", "PO4", "NH4", "SiO2", "TOTN", "TOTP")))  %>%
+  filter(StationCode == "VT4") %>%
+  ggplot(aes(Date, Concentration)) +
+    geom_smooth() +
+    geom_point() +
+    facet_wrap(~Var, scales = "free_y", ncol = 2)+
+    ggtitle("VT4")
+
+ggsave("Figures/VT4_allvars.png")
+
+df %>%
+  gather("Var", "Concentration", DOC:TOTN) %>%
+  mutate(Var=factor(Var, levels = c( "Sal_FB","Temp_FB", "DOC", "KlfA", "NO3", "PO4", "NH4", "SiO2", "TOTN", "TOTP")))  %>%
+  filter(StationCode == "VT12") %>%
+  ggplot(aes(Date, Concentration)) +
+    geom_smooth() +
+    geom_point() +
+    facet_wrap(~Var, scales = "free_y", ncol = 2)+
+    ggtitle("VT12")
+
+ggsave("Figures/VT12_allvars.png")
+
+
+
+```
+
+
+### d.  Station with depth color coded
+```{r}
+gg_VT4 <- df %>%
+  filter(StationId == "VR54") %>%
+  #gather("Variable", Value,  Temperature:DIN) %>%
+
+df %>%  
+ggplot(aes(Date, DOC)) + 
+    ylim (0,5) +
+    geom_point() +
+      labs(title = "VR54", x = "", y = "DOC (mg/L)") + 
+     scale_x_date(date_breaks = "4 month", limits = c(min, max)) +
+      theme (axis.text.x=element_blank(),axis.title.x=element_blank(), axis.ticks.length=unit(.25, "cm"), plot.title = element_text(hjust=0.5))
+
+```
+
+
+
+
+
+
+### e. DOC timeser with COVID shutdown of Trollfjord
+```{r}
+df %>%
+  ggplot(aes(Date, DOC)) + 
+    geom_point() + geom_smooth() +
+    facet_wrap(~StationCode, ncol=2) +
+      labs(title = "", x = "", y = "DOC (mg/L)") +
+      geom_vline(xintercept = as.numeric(ymd("2020-03-14")), linetype="dashed", 
+                color = "red", size=1) +
+        scale_x_date(date_breaks = "4 month", date_labels =  "%m-%y")+
+        theme(axis.text.x=element_text(angle=60, hjust=1))
+
+ggsave ("Figures/DOC_FBstations_COVID.png", width = 8, height = 6, dpi=500)
+```
+
+### e. Monthly climatologies
+```{r}
+str(df)
+df_m <- df %>%
+  group_by(Month, StationCode) %>%
+  summarize_at(vars(DOC:TOTN), mean, na.rm = TRUE)
+
+str(df_m)
+
+df_m %>%
+  ggplot(aes(Month, DOC)) + 
+    geom_point() + geom_smooth() +
+    facet_wrap(~StationCode, ncol=2)
+
+ggsave ("Figures/DOC_FBstations_monthly.png", width = 8, height = 6, dpi=500)
+
+df_m %>%
+  ggplot(aes(Month, NH4)) + 
+    geom_point() + geom_smooth() +
+    facet_wrap(~StationCode, ncol=2)
+
+ggsave ("Figures/NH4_FBstations_monthly.png", width = 8, height = 6, dpi=500)
+
+```
+
+
+### f. Property-property plots
+```{r}
+
+range (df$Date)
+
+# DOC vs salt
+df %>%
+  ggplot(aes(Sal_FB, DOC)) + 
+    geom_point() +
+    facet_wrap(~StationCode, ncol=5)
+
+ggsave("Figures/DOCvsSal.png")
+
+df %>%
+  ggplot(aes(NH4, DOC)) + 
+    geom_point() +
+    facet_wrap(~StationCode, ncol=5)
+
+ggsave("Figures/DOCvsNH4.png")
+
+df %>%
+  ggplot(aes(NH4, KlfA)) + 
+    geom_point() +
+    facet_wrap(~StationCode, ncol=5)
+
+ggsave("Figures/DOCvsKlfA.png")
+
+str (df)
+
+
+## vs more variables, for one station at a time
+# rename variables for facet labels
+new_labels <- c("Sal_FB" = "Salinitet", "KlfA" =  "Chl a (ug/l)", "NH4" =  "NH4 (ug/l)")
+
+#"VT4"  "VT12" "VT72" "VT23" "VT45" "VT22" "VT80" "VR25" "VR23" "VT76"
+
+df %>%
+  filter(StationCode == "VT12") %>%
+  gather(key = "var", value = "value", Sal_FB, KlfA, NH4) %>%
+  mutate(var=factor(var, levels = c("Sal_FB", "NH4", "KlfA")))  %>%
+  ggplot(aes(x = value, y = DOC)) + 
+    #ylim (0,3.8) +
+    geom_point() +
+      facet_wrap(~ var, scales = "free", labeller = labeller(var = new_labels), ncol = 1) +
+        labs(title = "VT12", y = "DOC (mg/L)") + 
+          theme (plot.title = element_text(hjust=0.5))
+
+ggsave("Figures/VT12_vs.png")
+
+```
+
+### x. code for combining water column station and FB station, for later if include ØKOKYST klima water colums stations...
+```{r}
+
+# Skagerrak: VT4 (Hvitsten) + VT3 Torbj?rnskj?r
+
+gg_VT4 <- df %>%
+  filter(StationCode == "VT4") %>%
+  #gather("Variable", Value,  Temperature:DIN) %>%
+  ggplot(aes(Date, DOC)) + 
+    ylim (0,3.8) +
+    geom_point() + geom_line() +
+      labs(title = "VT4:Hvitsten", x = "", y = "DOC (mg/L)") + 
+     scale_x_date(date_breaks = "1 month", limits = c(min, max)) +
+      theme (axis.text.x=element_blank(),axis.title.x=element_blank(), axis.ticks.length=unit(.25, "cm"), plot.title = element_text(hjust=0.5))
+gg_VT4
+
+gg_VT3 <- df_discrete %>%
+  filter(StationId == "VT3" & Depth == 5) %>%
+  #gather("Variable", Value,  Temperature:DIN) %>%
+  ggplot(aes(Date, DOC)) + 
+    ylim (0,3.8) +
+    geom_point() + geom_line() +
+      labs(title = "VT3:Torbj?rnskj?r", x = "", y = "DOC (mg/L)") + 
+     scale_x_date(date_breaks = "1 month", limits = c(min, max))+
+          theme (axis.text.x=element_text(angle=90, hjust=1), axis.ticks.length=unit(.25, "cm"),  
+                plot.title = element_text(hjust=0.5))
+gg_VT3
+
+# combine figures (with patchwork library)
+Skag <- gg_VT4 / gg_VT3
+
+plot (Skag)
+#ggsave("Figurer/Skagerrak_DOC.png", plot = Skag)
+
+```
+
+### Making plots of depth profiles, 
+```{r}
+library(reshape2)
+
+str (df_plot)
+df_sel <- select (df_plot, Date, Depth, Temp, Salt, CT, AT, pH_T, O_Ar)
+  
+  
+df_melt <-
+  df_sel %>%
+  melt(id.vars = c("Depth", "Date"))
+
+profile_2019 <- df_melt %>%
+  filter (Date < as.Date ("2020-01-25")) %>%
+  ggplot(aes(y = Depth, x = value, color = as.factor (Date))) +
+  geom_path() +
+  facet_wrap(~variable
+             , ncol = 2
+             , scales = "free_x") +
+  scale_y_reverse() +
+  labs(x="Value", y="Depth (m)", color="Date") +
+  theme_bw()
+profile_2019
+
+profile_2020 <- df_melt %>%
+  filter (Date >= as.Date ("2020-01-25")) %>%
+  ggplot(aes(y = Depth, x = value, color = as.factor (Date))) +
+  geom_path() +
+  facet_wrap(~variable
+             , ncol = 2
+             , scales = "free_x") +
+  scale_y_reverse() +
+  labs(x="Value", y="Depth (m)", color="Date") +
+  theme_bw()
+profile_2020
+
+ggsave ("Figurer/2020 data/VR54_Profiles_2020.png", dpi=500)
+
+```
+
+
+### z. VT3
+```{r}
+
+str (df_discrete)
+
+# POC ?g/l C
+
+df_discrete$POC_mg <- df_discrete$POC / 1000
+
+# rename variables for facet labels
+new_labels_2 <- c("Salinitet" = "Salinitet", "KlfA" =  "Chl a (?g/l)", "POC_mg" = "POC (mg/L)")
+
+
+# kun 5 m
+gg_VT3_vs_5m <- df_discrete %>%
+  filter(StationId == "VT3" & Depth == 5) %>%
+  gather(key = "var", value = "value", Salinitet, KlfA, POC_mg) %>%
+  mutate(var=factor(var, levels = c("Salinitet", "KlfA", "POC_mg")))  %>%
+  ggplot(aes(x = value, y = DOC)) + 
+    #ylim (0,3.8) +
+    geom_point() +
+      facet_wrap(~ var, scales = "free", labeller = labeller(var = new_labels_2)) +
+        labs(title = "VT3:Torbj?rnskj?r - 5m", y = "DOC (mg/L)") + 
+          theme (plot.title = element_text(hjust=0.5))
+gg_VT3_vs_5m
+
+ggsave("Figurer/Skagerrak_VT3_vs_5m.png", plot = gg_VT3_vs_5m)
+
+
+# med ulike dyp
+gg_VT3_vs_depth <- df_discrete %>%
+  filter(StationId == "VT3") %>%
+  gather(key = "var", value = "value", Salinitet, KlfA, POC_mg) %>%
+  mutate(var=factor(var, levels = c("Salinitet", "KlfA", "POC_mg")))  %>%
+  ggplot(aes(x = value, y = DOC)) + 
+    #ylim (0,3.8) +
+    geom_point() +
+      facet_grid(Depth ~ var, scales = "free_x", labeller = labeller(var = new_labels_2)) +
+        labs(title = "VT3:Torbj?rnskj?r", y = "DOC (mg/L)") + 
+          theme (plot.title = element_text(hjust=0.5))
+gg_VT3_vs_depth
+
+ggsave("Figurer/Skagerrak_VT3_vs_alldepth.png", plot = gg_VT3_vs_depth)
+
+```
+test

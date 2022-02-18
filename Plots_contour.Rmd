@@ -1,0 +1,212 @@
+---
+title: "Plotting contour plots from water column stations"
+author: "Helene"
+date: "18 Feb 2022"
+output: github_document:
+    toc: true
+  html_document:
+    toc: true    
+    toc_float: true
+    code_folding: hide
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_format = "all", output_dir = "../Produced_documents") })
+
+---
+
+* NB uses cleaned datset made in script "Read_and_check_AqM_files.Rmd".
+
+## 0. Libraries
+```{r, error = F, warning = F}
+
+# clean workspace
+#rm(list=ls())
+
+#library (caTools)
+library (lubridate)
+library (dplyr)
+#install.packages ("vctrs")
+#install.packages ("ellipsis")
+#library (vctrs)
+#library (ellipsis)
+library(tidyr)     # 
+#library(purrr)     # for map_dbl
+#install.packages ("rMR")
+#library (rMR) # calculate O2 saturation
+#library (seacarb)
+library(akima) # for interpolations
+library(ggplot2)
+library(readxl)
+library(mgcv)     # for gam() in plots
+library(patchwork) # for arranging plots in panels
+
+# specific functions needed for the contour plots
+
+# NB! this source file contains the function (used by okokyst_plot function here), and needs to be saved in the same folder as this script
+source("okokyst_plot_functions.R")# new version in 2021
+
+# Use a self-defined color scale  
+jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", 
+                                 "yellow", "#FF7F00", "red", "#7F0000"))
+
+```
+
+
+## 1. Read and clean files
+### a. read
+* this file is produced in script "Read_and_check_OKOKYST_Klima.Rmd"
+```{r}
+
+# clear workspace
+#rm(list = ls())
+
+#dir("Datasett")
+
+df <- read.delim ("Datasett/OKOKYST_data_cleaned.txt")
+
+str(df)
+
+# convert back to Date
+df$Date <- as.Date(df$Date)
+#str(df)
+
+# station naming, convert back to factor
+df$StationId <- as.factor (df$StationId)
+
+```
+
+### b. Clean data for contour plots, summarizing for depths
+* the interpolation in okokyst_plot() does not like a lot of missing data. so I make a dataset that has only the 5 depths for disceret stations (0-30m), average the dataset for those depths, and make on separate dataset for each station. this can probably be done in many different ways, but I found this works for me... 
+```{r}
+
+str (df)
+
+# For water chemistry variables with discrete depths (0-30m), NB! you need to replace with the column names in the file you use!  
+df_chem <- df %>%
+  select(-c(Depth2:Turbiditet, O2_mg, O2_ml))  %>%
+   filter (Depth1 == 0.0 | Depth1 == 5.0 | Depth1 == 10.0 | Depth1 == 20.0 | Depth1 == 30.0) %>%
+   rename (Depth = Depth1)
+
+#str(df_chem)
+
+# summarize
+df_chem_m <- df_chem %>%
+group_by(StationId, Date, Depth) %>%
+  summarize_at(vars(DOC:TSM), mean, na.rm = TRUE) %>%
+    ungroup ()
+
+# (df_chem_m)
+
+# make df for each station, NB replace with the stations you use (needed for okokyst_plot function)
+
+VT16 <- df_chem_m %>%
+  filter(StationId == "VT16")
+
+VT71 <- df_chem_m %>%
+  filter(StationId == "VT71")
+
+VR54 <- df_chem_m %>%
+  filter(StationId == "VR54")
+
+VR58 <- df_chem_m %>%
+  filter(StationId == "VR58")
+
+VR21 <- df_chem_m %>%
+  filter(StationId == "VR21")
+
+```
+
+## 2. Contour plots
+
+### o. example from Dag 13.04.2021 - just for showing differnt functionality and testing
+```{r}
+## Using okokyst_plot() function ---- 
+
+# Basic plot
+# debugonce(okokyst_plot)
+okokyst_plot(VR54, "DOC")
+
+# Don't show the coloured points (can instead use 'colored_points_size' to adjust size)
+okokyst_plot(VR54, "KlfA", colored_points = FALSE)
+
+# If you want to remove part of the background colors, then
+# (1) first use okokyst_make_plotdata()  (here, we call the result 'my_plotdata')
+# (2) select the part of the data and store the result (here, called 'sel')
+# (3) set the variable 'z' in the dataset from 1 ('my_plotdata') to be NA for all selected rows ('sel')
+# (4) use okokyst_plot() as before, but set plotdata = the name of the dataset from 1 (here, 'my_plotdata') 
+# Example:
+my_plotdata <- okokyst_make_plotdata(df2, "KlfA")  
+sel <- with(my_plotdata, Time >= dmy("01.05.2020") & Time <= dmy("31.05.2020") & Depth < 15)
+my_plotdata$z[sel] <- NA
+okokyst_plot(df2, "KlfA", plotdata = my_plotdata)
+
+# Try GAM (doesn't work well in this case)
+okokyst_plot(VR54, "KlfA", gam = TRUE, gam_k = 5)
+
+# Try a different palette (you can set palette = 'A', 'B', 'C' or 'D' - the default is D)
+okokyst_plot(VR54, "KlfA", palette = "C")
+
+# Turn colors "upside down" (setting colored_points_rim = TRUE to see points in all parts)
+okokyst_plot(VR54, "KlfA", palette = "A", 
+             reverse_colors = TRUE, colored_points_rim = TRUE)
+
+okokyst_plot(VR54, "KlfA") +
+  scale_fill_gradientn(colours = jet.colors(16))
+
+```
+
+
+
+### a. Here is an example for NO3 for two stations, this can of course be adapted for all different stations/variables
+
+#### VR54
+```{r}
+
+# check range, can be set automatically, but I often found the plot looks nicer if you set manually
+quantile(VR54$NO3_NO2, na.rm = T)
+
+# with colored points and date label every 2nd month (depends on length of the timeseries for the station)
+# NB! here I set the labels = null (compare with VT71 below), because I want to have them on top of eachother in a panel (see 3. Combine figures below)
+VR54_NO3 <- okokyst_plot(data = VR54, varname = "NO3_NO2", ctd_variable = F,
+                   colored_points = T, limits = c(0, 124), binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("NO3+NO2", colours = jet.colors(16)) +
+                    scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+VR54_NO3
+
+ggsave ("Figures/VR54_NO3.png", dpi=500)
+
+
+```
+
+
+
+#### VT71
+```{r}
+
+quantile (VT71$NO3_NO2, na.rm = T)
+
+# med punkter
+VT71_NO3 <- okokyst_plot(data = VT71, varname = "NO3_NO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = c(0, 110), binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("NO3+NO2", colours = jet.colors(16)) +
+                      scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT71_NO3
+
+ggsave ("Figures/VT71_NO3.png", dpi=500)
+
+```
+
+
+
+## 3. Combine figures (with patchwork library)
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+NO3 <- VR54_NO3 +  VT71_NO3 + plot_layout(ncol = 1)
+plot (NO3)
+ggsave("Figures/NO3_panel.png", plot = NO3)
+  
+```
+
+
+
