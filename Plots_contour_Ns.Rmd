@@ -39,14 +39,16 @@ library(readxl)
 library(mgcv)     # for gam() in plots
 library(patchwork) # for arranging plots in panels
 library(tidyverse)
+
+#library(RColorBrewer)
 # specific functions needed for the contour plots
 
 # NB! this source file contains the function (used by okokyst_plot function here), and needs to be saved in the same folder as this script
-source("okokyst_plot_functions.R")# new version in 2021
+source("okokyst_plot_functions_LOV.R")# new version in 2021
 
 # Use a self-defined color scale  
-jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", 
-                                 "yellow", "#FF7F00", "red", "#7F0000"))
+jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
+
 
 ```
 
@@ -57,7 +59,7 @@ jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F"
 ```{r}
 
 # clear workspace
-rm(list = ls())
+#rm(list = ls())
 
 #dir("Datasett")
 
@@ -174,7 +176,7 @@ okokyst_plot(VR54, "KlfA") +
 
 ### a. Here is an example for NO3 for two stations, this can of course be adapted for all different stations/variables
 
-#### VT8
+#### VT8 TOTN
 ```{r}
 
 # check range, can be set automatically, but I often found the plot looks nicer if you set manually
@@ -191,7 +193,7 @@ VT8_TOTN <- okokyst_plot(data = VT8, varname = "TOTN", ctd_variable = F,
 
 VT8_TOTN
 
-#ggsave ("Figures/VT8_test5.png", dpi=500, width = 8, height = 3)
+ggsave ("Figures/VT8_TOTN.png", dpi=500, width = 8, height = 3)
 
 
 ```
@@ -213,8 +215,8 @@ VT8_NO3 <- okokyst_plot(data = VT8, varname = "NO3_NO2", ctd_variable = FALSE,
 
 VT8_NO3
 
-#ggsave ("Figures/VT8_NO3.png", dpi=500)
-
+ggsave ("Figures/VT8_NO3.png", dpi=500, width = 8, height = 3)
+ 
 ```
 #### VT8 NH4
 ```{r}
@@ -230,7 +232,7 @@ VT8_NH4 <- okokyst_plot(data = VT8, varname = "NH4", ctd_variable = FALSE,
                       theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT8_NH4
 
-#ggsave ("Figures/VT8_NH4.png", dpi=500)
+ggsave ("Figures/VT8_NH4.png", dpi=500, width = 8, height = 3)
 
 
 ```
@@ -261,11 +263,12 @@ grenser <- c(0,60)
 VT8_PO4 <- okokyst_plot(data = VT8, varname = "PO4", ctd_variable = FALSE,
                    colored_points = TRUE, limits = c(0, 110), binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16)) +
-                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+                      scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 
 VT8_PO4
 
-#ggsave ("Figures/VT8_PO4.png", dpi=500)
+ggsave ("Figures/VT8_PO4.png", dpi=500, , width = 8, height = 3)
 ```
 
 ####vt8 TOTP
@@ -282,7 +285,7 @@ VT8_TOTP <- okokyst_plot(data = VT8, varname = "TOTP", ctd_variable = FALSE,
 
 VT8_TOTP
 
-#ggsave ("Figures/VT8_TOTP.png", dpi=500)
+ggsave ("Figures/VT8_TOTP.png", dpi=500, width = 8, height = 3)
 ```
 
 
@@ -301,7 +304,7 @@ VT8_SIO2 <- okokyst_plot(data = VT8, varname = "SIO2", ctd_variable = FALSE,
                       theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT8_SIO2
 
-#ggsave ("Figures/VT8_SIO2.png", dpi=500)
+ggsave ("Figures/VT8_SIO2.png", dpi=500, width = 8, height = 3)
 
 ```
 
@@ -309,9 +312,9 @@ VT8_SIO2
 ```{r}
 # combine figures, here combine two NO3 for different stations
 #NB can of curse combine different variables for one station as well 
-FOSFAT_SILIKAT <- VT8_TOTP +  VT8_PO4 + VT8_SIO2 + plot_layout(ncol = 1)
-plot (FOSFAT_SILIKAT)
-ggsave("Figures/VT8_fosfatsilikat_panel.png", plot = FOSFAT_SILIKAT)
+VT8_FOSFAT <- VT8_TOTP + VT8_PO4 +plot_layout(ncol = 1)
+plot (VT8_FOSFAT)
+ggsave("Figures/VT8_fosfat_panel.png", plot = VT8_FOSFAT)
   
 ```
 #### VT8 klfa
@@ -327,6 +330,15 @@ VT8_KlfA <- okokyst_plot(data = VT8, varname = "KlfA", ctd_variable = FALSE,
                       theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT8_KlfA 
 
-ggsave ("Figures/VT8_KlfA.png", dpi=500)
+ggsave ("Figures/VT8_KlfA.png", dpi=500, , width = 8, height = 3)
+```
+
+####combineallplots
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+VT8_all <- VT8_TOTN+ VT8_NO3+ VT8_NH4+ VT8_TOTP +  VT8_PO4 + VT8_SIO2 + VT8_KlfA + plot_layout(ncol = 1)
+plot (VT8_all)
+ggsave("Figures/VT8_fosfatsilikat_panel.png", plot = VT8_all, dpi=500, , width = 8, height = 3)
 ```
 
