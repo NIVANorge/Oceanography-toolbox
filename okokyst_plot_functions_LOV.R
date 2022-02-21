@@ -17,7 +17,7 @@ library(purrr)
 #               If there number of days between two observation dates is > 2*max_timediff, there will be a white "break"  
 
 okokyst_make_plotdata <- function(data, varname, 
-                                  gam = FALSE, gam_k = 20, linear = FALSE,
+                                  gam = FALSE, gam_k = 20, linear = TRUE,
                                   nx = 100, ny = 100, max_timediff = 21){
   
   data <- as.data.frame(data)
@@ -84,7 +84,7 @@ okokyst_make_plotdata <- function(data, varname,
 
 okokyst_plot <- function(data, varname, ctd_variable = FALSE, title = "", 
                          binwidth = 1, limits = c(NA,NA), color_ctdtime = "black", 
-                         gam = FALSE, gam_k = 20, linear = FALSE,
+                         gam = FALSE, gam_k = 20, linear = TRUE,
                          nx = 200, ny = 200, 
                          max_timediff = 21,                
                          colored_points = TRUE, colored_points_size = 0.1,
@@ -119,7 +119,7 @@ okokyst_plot <- function(data, varname, ctd_variable = FALSE, title = "",
   }
   gg <- ggplot(df_plot, aes(Time, Depth)) +
     geom_raster(aes(fill = z), interpolate = F, hjust = 0.5, vjust = 0.5) +
-    geom_contour(aes(z = z), binwidth = binwidth) + 
+    #geom_contour(aes(z = z), binwidth = binwidth) + 
     #scale_x_datetime(breaks = seq(dmy(23022017), dmy(30112021), by ="1 month"), date_labels =  "%b %y")+
     scale_y_reverse(limits = ylim) +
     scale_x_datetime(date_breaks = "2 month", date_minor_breaks = "2 month", date_labels = "%b %y") +
