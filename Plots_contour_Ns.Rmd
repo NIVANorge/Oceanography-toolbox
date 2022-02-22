@@ -19,7 +19,7 @@ knit: (function(inputFile, encoding) {
 ```{r, error = F, warning = F}
 
 # clean workspace
-#rm(list=ls())
+rm(list=ls())
 
 #library (caTools)
 library (lubridate)
@@ -39,11 +39,13 @@ library(readxl)
 library(mgcv)     # for gam() in plots
 library(patchwork) # for arranging plots in panels
 library(tidyverse)
+library(scales)
 
 library(RColorBrewer)
 # specific functions needed for the contour plots
 
 # NB! this source file contains the function (used by okokyst_plot function here), and needs to be saved in the same folder as this script
+
 source("okokyst_plot_functions_LOV.R")# new version in 2021
 
 # Use a self-defined color scale  
@@ -84,7 +86,7 @@ extreme_values <- df %>% filter((TOTN > 800) | (SIO2 > 2000) | (TOTP > 100) | (N
 df <- df %>% filter(((TOTN < 800)  %>% replace_na(TRUE)) , ((SIO2  < 2000) %>% replace_na(TRUE)) , ((TOTP < 100)%>% replace_na(TRUE)) , ((NH4 < 400)%>% replace_na(TRUE)))
 
 #select years
-df <- subset(df, Date >= "2017-01-01" &  Date <= "2021-12-31")
+df <- subset(df, Date >= "2017-01-01" &  Date <= "2021-11-30")
 
 ```
 
@@ -187,13 +189,13 @@ quantile(VR48$TOTN, na.rm = T)
 
 grenser <- c(0,500)
 VR48_TOTN <- okokyst_plot(data = VR48, varname = "TOTN", ctd_variable = F,
-                   colored_points = T, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F, ) +
-                    scale_fill_gradientn("TOTN", colours = jet.colors(16)) +
+                   colored_points = T, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTN", colours = jet.colors(20), limits= grenser, breaks = c(100,200,300,400), oob=squish) +
                     scale_x_datetime(date_breaks = "2 month", labels =  NULL)
 
 VR48_TOTN
 
-  ggsave ("Figures/VR48/VR48_TOTN.png", dpi=500, width = 8, height = 3)
+#ggsave ("Figures/VR48/VR48_TOTN.png", dpi=500, width = 8, height = 3)
 
 
 ```
@@ -209,13 +211,13 @@ quantile (VR48$NO3_NO2, na.rm = T)
 
 grenser <- c(0,200)
 VR48_NO3 <- okokyst_plot(data = VR48, varname = "NO3_NO2", ctd_variable = FALSE,
-                   colored_points = TRUE, limits = c(0, 110), binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
-                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), colours = jet.colors(16)) +
+                   colored_points = TRUE, limits =grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
 
 VR48_NO3
 
-ggsave ("Figures/VR48/VR48_NO3.png", dpi=500, width = 8, height = 3)
+#ggsave ("Figures/VR48/VR48_NO3.png", dpi=500, width = 8, height = 3)
  
 ```
 #### VR48 NH4
@@ -226,13 +228,13 @@ quantile (VR48$NH4, na.rm = T)
 # med punkter
 grenser <- c(0,80)
 VR48_NH4 <- okokyst_plot(data = VR48, varname = "NH4", ctd_variable = FALSE,
-                   colored_points = TRUE, limits = c(0, 110), binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
-                    scale_fill_gradientn(name= expression("NH"[4]), colours = jet.colors(16)) +
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
                       theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR48_NH4
 
-ggsave ("Figures/VR48/VR48_NH4.png", dpi=500, width = 8, height = 3)
+#ggsave ("Figures/VR48/VR48_NH4.png", dpi=500, width = 8, height = 3)
 
 
 ```
@@ -245,9 +247,9 @@ ggsave ("Figures/VR48/VR48_NH4.png", dpi=500, width = 8, height = 3)
 ```{r}
 # combine figures, here combine two NO3 for different stations
 #NB can of curse combine different variables for one station as well 
-Nitrogen <- VR48_TOTN +  VR48_NO3 + VR48_NH4 + plot_layout(ncol = 1)
+Nitrogen <- VR48_TOTN +  VR48_NO3 + VR48_NH4 + plot_layout(ncol = 1, width = 8, height =6)
 plot (Nitrogen)
-ggsave("Figures/VR48/VR48_nitrogen_panel.png", plot = Nitrogen)
+  ggsave("Figures/VR48/VR48_nitrogen_panel_test.png", plot = Nitrogen,  width = 8, height = 6)
   
 ```
 
@@ -261,14 +263,15 @@ quantile (VR48$PO4, na.rm = T)
 
 grenser <- c(0,60)
 VR48_PO4 <- okokyst_plot(data = VR48, varname = "PO4", ctd_variable = FALSE,
-                   colored_points = TRUE, limits = c(0, 110), binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
-                    scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16)) +
-                      scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+ 
+                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 
 VR48_PO4
 
-ggsave ("Figures/VR48/VR48_PO4.png", dpi=500, , width = 8, height = 3)
+#ggsave ("Figures/VR48/VR48_PO4.png", dpi=500, , width = 8, height = 3)
 ```
 
 ####VR48 TOTP
@@ -279,13 +282,13 @@ quantile (VR48$TOTP, na.rm = T)
 
 grenser <- c(0,60)
 VR48_TOTP <- okokyst_plot(data = VR48, varname = "TOTP", ctd_variable = FALSE,
-                   colored_points = TRUE, limits = c(0, 110), binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
-                    scale_fill_gradientn("TOTP", colours = jet.colors(16)) +
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTP", colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
 
 VR48_TOTP
 
-ggsave ("Figures/VR48/VR48_TOTP.png", dpi=500, width = 8, height = 3)
+#ggsave ("Figures/VR48/VR48_TOTP.png", dpi=500, width = 8, height = 3)
 ```
 
 
@@ -294,17 +297,17 @@ ggsave ("Figures/VR48/VR48_TOTP.png", dpi=500, width = 8, height = 3)
 ```{r}
 
 quantile (VR48$SIO2, na.rm = T)
-
+rm
 # med punkter
 grenser <- c(0,900)
 VR48_SIO2 <- okokyst_plot(data = VR48, varname = "SIO2", ctd_variable = FALSE,
-                   colored_points = TRUE, limits = c(0, 110), binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
-                    scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16)) +
-                      scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
+                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
                       theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR48_SIO2
 
-ggsave ("Figures/VR48/VR48_SIO2.png", dpi=500, width = 8, height = 3)
+#ggsave ("Figures/VR48/VR48_SIO2.png", dpi=500, width = 8, height = 3)
 
 ```
 
@@ -312,9 +315,10 @@ ggsave ("Figures/VR48/VR48_SIO2.png", dpi=500, width = 8, height = 3)
 ```{r}
 # combine figures, here combine two NO3 for different stations
 #NB can of curse combine different variables for one station as well 
-VR48_FOSFAT <- VR48_TOTP + VR48_PO4 +plot_layout(ncol = 1)
-plot (VR48_FOSFAT)
-ggsave("Figures/VR48_fosfat_panel.png", plot = VR48_FOSFAT)
+VR48_fosfat_Si <- VR48_TOTP +  VR48_PO4 + VR48_SIO2 +  plot_layout(ncol = 1,  width = 8, height = 6)
+plot (VR48_fosfat_Si)
+ggsave("Figures/VR48/VR48_fosfat_Si_panel.png", plot = VR48_fosfat_Si,  width = 8, height = 6)
+```
   
 ```
 #### VR48 klfa
@@ -324,21 +328,11 @@ quantile (VR48$KlfA, na.rm = T)
 # med punkter
 grenser <- c(0,5)
 VR48_KlfA <- okokyst_plot(data = VR48, varname = "KlfA", ctd_variable = FALSE,
-                   colored_points = TRUE, limits = c(0, 110), binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
-                    scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16)) +
-                      scale_fill_gradientn("KlfA", colours = jet.colors(16)) +
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                      scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
                       theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR48_KlfA 
 
-ggsave ("Figures/VR48/VR48_KlfA.png", dpi=500, , width = 8, height = 3)
-```
-
-####combineallplots
-```{r}
-# combine figures, here combine two NO3 for different stations
-#NB can of curse combine different variables for one station as well 
-#VR48_all <- VR48_TOTN+ VR48_NO3+ VR48_NH4+ VR48_TOTP +  VR48_PO4 + VR48_SIO2 + VR48_KlfA + plot_layout(ncol = 1)
-#plot (VR48_all)
-#ggsave("Figures/VR48_fosfatsilikat_panel.png", plot = VR48_all, dpi=500, , width = 8, height = 3)
+ggsave ("Figures/VR48/VR48_KlfA.png" , width = 8, height = 3)
 ```
 
