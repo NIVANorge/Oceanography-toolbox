@@ -178,7 +178,7 @@ okokyst_plot(VR54, "KlfA") +
 
 ### a. Here is an example for NO3 for two stations, this can of course be adapted for all different stations/variables
 
-#### VT8 TOTN
+#### VR48 TOTN
 ```{r}
 
 # check range, can be set automatically, but I often found the plot looks nicer if you set manually
@@ -335,4 +335,1130 @@ VR48_KlfA
 
 ggsave ("Figures/VR48/VR48_KlfA.png" , width = 8, height = 3)
 ```
+
+
+
+#### VT8 TOTN
+
+```{r}
+
+# check range, can be set automatically, but I often found the plot looks nicer if you set manually
+quantile(VT8$TOTN, na.rm = T)
+
+# with colored points and date label every 2nd month (depends on length of the timeseries for the station)
+# NB! here I set the labels = null (compare with VT71 below), because I want to have them on top of eachother in a panel (see 3. Combine figures below)
+
+grenser <- c(0,500)
+VT8_TOTN <- okokyst_plot(data = VT8, varname = "TOTN", ctd_variable = F,
+                   colored_points = T, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTN", colours = jet.colors(20), limits= grenser, breaks = c(100,200,300,400), oob=squish) +
+                    scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT8_TOTN
+
+ggsave ("Figures/VT8/VT8_TOTN.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+
+#### VT8 NO3
+```{r}
+
+quantile (VT8$NO3_NO2, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,200)
+VT8_NO3 <- okokyst_plot(data = VT8, varname = "NO3_NO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits =grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT8_NO3
+
+ggsave ("Figures/VT8/VT8_NO3.png", dpi=500, width = 8, height = 3)
+ 
+```
+#### VT8 NH4
+```{r}
+
+quantile (VT8$NH4, na.rm = T)
+
+# med punkter
+grenser <- c(0,80)
+VT8_NH4 <- okokyst_plot(data = VT8, varname = "NH4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT8_NH4
+
+ggsave ("Figures/VT8/VT8_NH4.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+####
+
+
+## 3. Combine figures (with patchwork library)
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+Nitrogen <- VT8_TOTN +  VT8_NO3 + VT8_NH4 + plot_layout(ncol = 1, width = 8, height =6)
+plot (Nitrogen)
+  ggsave("Figures/VT8/VT8_nitrogen_panel_test.png", plot = Nitrogen,  width = 8, height = 6)
+  
+```
+
+####VT8 PO4
+
+```{r}
+
+quantile (VT8$PO4, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VT8_PO4 <- okokyst_plot(data = VT8, varname = "PO4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+ 
+                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+
+VT8_PO4
+
+ggsave ("Figures/VT8/VT8_PO4.png", dpi=500, , width = 8, height = 3)
+```
+
+####VT8 TOTP
+```{r}
+quantile (VT8$TOTP, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VT8_TOTP <- okokyst_plot(data = VT8, varname = "TOTP", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTP", colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT8_TOTP
+
+ggsave ("Figures/VT8/VT8_TOTP.png", dpi=500, width = 8, height = 3)
+```
+
+
+####VT8 SIO2
+
+```{r}
+
+quantile (VT8$SIO2, na.rm = T)
+rm
+# med punkter
+grenser <- c(0,900)
+VT8_SIO2 <- okokyst_plot(data = VT8, varname = "SIO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
+                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT8_SIO2
+
+ggsave ("Figures/VT8/VT8_SIO2.png", dpi=500, width = 8, height = 3)
+
+```
+
+##cOMBINE 
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+VT8_fosfat_Si <- VT8_TOTP +  VT8_PO4 + VT8_SIO2 +  plot_layout(ncol = 1,  width = 8, height = 6)
+plot (VT8_fosfat_Si)
+ggsave("Figures/VT8/VT8_fosfat_Si_panel.png", plot = VT8_fosfat_Si,  width = 8, height = 6)
+```
+  
+```
+#### VT8 klfa
+```{r}
+quantile (VT8$KlfA, na.rm = T)
+
+# med punkter
+grenser <- c(0,5)
+VT8_KlfA <- okokyst_plot(data = VT8, varname = "KlfA", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                      scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT8_KlfA 
+
+ggsave ("Figures/VT8/VT8_KlfA.png" , width = 8, height = 3)
+```
+
+
+
+#### VR49 TOTN
+```{r}
+
+# check range, can be set automatically, but I often found the plot looks nicer if you set manually
+quantile(VR48$TOTN, na.rm = T)
+
+# with colored points and date label every 2nd month (depends on length of the timeseries for the station)
+# NB! here I set the labels = null (compare with VT71 below), because I want to have them on top of eachother in a panel (see 3. Combine figures below)
+
+grenser <- c(0,500)
+VR49_TOTN <- okokyst_plot(data = VR49, varname = "TOTN", ctd_variable = F,
+                   colored_points = T, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTN", colours = jet.colors(20), limits= grenser, breaks = c(100,200,300,400), oob=squish) +
+                    scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VR49_TOTN
+
+ggsave ("Figures/VR49/VR49_TOTN.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+
+#### VR49 NO3
+```{r}
+
+quantile (VR49$NO3_NO2, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,200)
+VR49_NO3 <- okokyst_plot(data = VR49, varname = "NO3_NO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits =grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VR49_NO3
+
+ggsave ("Figures/VR49/VR49_NO3.png", dpi=500, width = 8, height = 3)
+ 
+```
+#### VR49 NH4
+```{r}
+
+quantile (VR49$NH4, na.rm = T)
+
+# med punkter
+grenser <- c(0,80)
+VR49_NH4 <- okokyst_plot(data = VR49, varname = "NH4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VR49_NH4
+
+ggsave ("Figures/VR49/VR49_NH4.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+####
+
+
+## 3. Combine figures (with patchwork library)
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+Nitrogen <- VR49_TOTN +  VR49_NO3 + VR49_NH4 + plot_layout(ncol = 1, width = 8, height =6)
+plot (Nitrogen)
+  ggsave("Figures/VR49/VR49_nitrogen_panel_test.png", plot = Nitrogen,  width = 8, height = 6)
+  
+```
+
+####VR49 PO4
+
+```{r}
+
+quantile (VR49$PO4, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VR49_PO4 <- okokyst_plot(data = VR49, varname = "PO4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+ 
+                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+
+VR49_PO4
+
+ggsave ("Figures/VR49/VR49_PO4.png", dpi=500, , width = 8, height = 3)
+```
+
+####VR49 TOTP
+```{r}
+quantile (VR49$TOTP, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VR49_TOTP <- okokyst_plot(data = VR49, varname = "TOTP", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTP", colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VR49_TOTP
+
+ggsave ("Figures/VR49/VR49_TOTP.png", dpi=500, width = 8, height = 3)
+```
+
+
+####VR49 SIO2
+
+```{r}
+
+quantile (VR49$SIO2, na.rm = T)
+
+# med punkter
+grenser <- c(0,900)
+VR49_SIO2 <- okokyst_plot(data = VR49, varname = "SIO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
+                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VR49_SIO2
+
+ggsave ("Figures/VR49/VR49_SIO2.png", dpi=500, width = 8, height = 3)
+
+```
+
+##cOMBINE 
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+VR49_fosfat_Si <- VR49_TOTP +  VR49_PO4 + VR49_SIO2 +  plot_layout(ncol = 1,  width = 8, height = 6)
+plot (VR49_fosfat_Si)
+ggsave("Figures/VR49/VR49_fosfat_Si_panel.png", plot = VR49_fosfat_Si,  width = 8, height = 6)
+```
+  
+```
+#### VR49 klfa
+```{r}
+quantile (VR49$KlfA, na.rm = T)
+
+# med punkter
+grenser <- c(0,5)
+VR49_KlfA <- okokyst_plot(data = VR49, varname = "KlfA", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                      scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VR49_KlfA 
+
+ggsave ("Figures/VR49/VR49_KlfA.png" , width = 8, height = 3)
+```
+
+
+
+#### VT16 TOTN
+```{r}
+
+# check range, can be set automatically, but I often found the plot looks nicer if you set manually
+quantile(VR48$TOTN, na.rm = T)
+
+# with colored points and date label every 2nd month (depends on length of the timeseries for the station)
+# NB! here I set the labels = null (compare with VT71 below), because I want to have them on top of eachother in a panel (see 3. Combine figures below)
+
+grenser <- c(0,500)
+VT16_TOTN <- okokyst_plot(data = VT16, varname = "TOTN", ctd_variable = F,
+                   colored_points = T, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTN", colours = jet.colors(20), limits= grenser, breaks = c(100,200,300,400), oob=squish) +
+                    scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT16_TOTN
+
+ggsave ("Figures/VT16/VT16_TOTN.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+
+#### VT16 NO3
+```{r}
+
+quantile (VT16$NO3_NO2, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,200)
+VT16_NO3 <- okokyst_plot(data = VT16, varname = "NO3_NO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits =grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT16_NO3
+
+ggsave ("Figures/VT16/VT16_NO3.png", dpi=500, width = 8, height = 3)
+ 
+```
+#### VT16 NH4
+```{r}
+
+quantile (VT16$NH4, na.rm = T)
+
+# med punkter
+grenser <- c(0,80)
+VT16_NH4 <- okokyst_plot(data = VT16, varname = "NH4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT16_NH4
+
+ggsave ("Figures/VT16/VT16_NH4.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+####
+
+
+## 3. Combine figures (with patchwork library)
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+Nitrogen <- VT16_TOTN +  VT16_NO3 + VT16_NH4 + plot_layout(ncol = 1, width = 8, height =6)
+plot (Nitrogen)
+  ggsave("Figures/VT16/VT16_nitrogen_panel_test.png", plot = Nitrogen,  width = 8, height = 6)
+  
+```
+
+####VT16 PO4
+
+```{r}
+
+quantile (VT16$PO4, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VT16_PO4 <- okokyst_plot(data = VT16, varname = "PO4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+ 
+                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+
+VT16_PO4
+#ggsave ("Figures/VT16/VT16_PO4.png", dpi=500, , width = 8, height = 3)
+```
+
+####VT16 TOTP
+```{r}
+quantile (VT16$TOTP, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VT16_TOTP <- okokyst_plot(data = VT16, varname = "TOTP", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTP", colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT16_TOTP
+
+ggsave ("Figures/VT16/VT16_TOTP.png", dpi=500, width = 8, height = 3)
+```
+
+
+####VT16 SIO2
+
+```{r}
+
+quantile (VT16$SIO2, na.rm = T)
+rm
+# med punkter
+grenser <- c(0,900)
+VT16_SIO2 <- okokyst_plot(data = VT16, varname = "SIO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
+                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT16_SIO2
+
+ggsave ("Figures/VT16/VT16_SIO2.png", dpi=500, width = 8, height = 3)
+
+```
+
+##cOMBINE 
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+VT16_fosfat_Si <- VT16_TOTP +  VT16_PO4 + VT16_SIO2 +  plot_layout(ncol = 1,  width = 8, height = 6)
+plot (VT16_fosfat_Si)
+ggsave("Figures/VT16/VT16_fosfat_Si_panel.png", plot = VT16_fosfat_Si,  width = 8, height = 6)
+```
+  
+```
+#### VT16 klfa
+```{r}
+quantile (VT16$KlfA, na.rm = T)
+
+# med punkter
+grenser <- c(0,5)
+VT16_KlfA <- okokyst_plot(data = VT16, varname = "KlfA", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                      scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT16_KlfA 
+
+ggsave ("Figures/VT16/VT16_KlfA.png" , width = 8, height = 3)
+```
+
+
+
+
+#### VT79 TOTN
+```{r}
+
+# check range, can be set automatically, but I often found the plot looks nicer if you set manually
+quantile(VR48$TOTN, na.rm = T)
+
+# with colored points and date label every 2nd month (depends on length of the timeseries for the station)
+# NB! here I set the labels = null (compare with VT71 below), because I want to have them on top of eachother in a panel (see 3. Combine figures below)
+
+grenser <- c(0,500)
+VT79_TOTN <- okokyst_plot(data = VT79, varname = "TOTN", ctd_variable = F,
+                   colored_points = T, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTN", colours = jet.colors(20), limits= grenser, breaks = c(100,200,300,400), oob=squish) +
+                    scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT79_TOTN
+
+ggsave ("Figures/VT79/VT79_TOTN.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+
+#### VT79 NO3
+```{r}
+
+quantile (VT79$NO3_NO2, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,200)
+VT79_NO3 <- okokyst_plot(data = VT79, varname = "NO3_NO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits =grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT79_NO3
+
+ggsave ("Figures/VT79/VT79_NO3.png", dpi=500, width = 8, height = 3)
+ 
+```
+#### VT79 NH4
+```{r}
+
+quantile (VT79$NH4, na.rm = T)
+
+# med punkter
+grenser <- c(0,80)
+VT79_NH4 <- okokyst_plot(data = VT79, varname = "NH4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT79_NH4
+
+ggsave ("Figures/VT79/VT79_NH4.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+####
+
+
+## 3. Combine figures (with patchwork library)
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+Nitrogen <- VT79_TOTN +  VT79_NO3 + VT79_NH4 + plot_layout(ncol = 1, width = 8, height =6)
+plot (Nitrogen)
+  ggsave("Figures/VT79/VT79_nitrogen_panel_test.png", plot = Nitrogen,  width = 8, height = 6)
+  
+```
+
+####VT79 PO4
+
+```{r}
+
+quantile (VT79$PO4, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VT79_PO4 <- okokyst_plot(data = VT79, varname = "PO4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+ 
+                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+
+VT79_PO4
+
+ggsave ("Figures/VT79/VT79_PO4.png", dpi=500, , width = 8, height = 3)
+```
+
+####VT79 TOTP
+```{r}
+quantile (VT79$TOTP, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VT79_TOTP <- okokyst_plot(data = VT79, varname = "TOTP", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTP", colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT79_TOTP
+
+ggsave ("Figures/VT79/VT79_TOTP.png", dpi=500, width = 8, height = 3)
+```
+
+
+####VT79 SIO2
+
+```{r}
+
+quantile (VT79$SIO2, na.rm = T)
+
+# med punkter
+grenser <- c(0,900)
+VT79_SIO2 <- okokyst_plot(data = VT79, varname = "SIO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
+                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT79_SIO2
+
+ggsave ("Figures/VT79/VT79_SIO2.png", dpi=500, width = 8, height = 3)
+
+```
+
+##cOMBINE 
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+VT79_fosfat_Si <- VT79_TOTP +  VT79_PO4 + VT79_SIO2 +  plot_layout(ncol = 1,  width = 8, height = 6)
+plot (VT79_fosfat_Si)
+ggsave("Figures/VT79/VT79_fosfat_Si_panel.png", plot = VT79_fosfat_Si,  width = 8, height = 6)
+```
+  
+```
+#### VT79 klfa
+```{r}
+quantile (VT79$KlfA, na.rm = T)
+
+# med punkter
+grenser <- c(0,5)
+VT79_KlfA <- okokyst_plot(data = VT79, varname = "KlfA", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                      scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT79_KlfA 
+
+ggsave ("Figures/VT79/VT79_KlfA.png" , width = 8, height = 3)
+```
+
+
+#### VT70 TOTN
+```{r}
+
+# check range, can be set automatically, but I often found the plot looks nicer if you set manually
+quantile(VR48$TOTN, na.rm = T)
+
+# with colored points and date label every 2nd month (depends on length of the timeseries for the station)
+# NB! here I set the labels = null (compare with VT71 below), because I want to have them on top of eachother in a panel (see 3. Combine figures below)
+
+grenser <- c(0,500)
+VT70_TOTN <- okokyst_plot(data = VT70, varname = "TOTN", ctd_variable = F,
+                   colored_points = T, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTN", colours = jet.colors(20), limits= grenser, breaks = c(100,200,300,400), oob=squish) +
+                    scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT70_TOTN
+
+ggsave ("Figures/VT70/VT70_TOTN.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+
+#### VT70 NO3
+```{r}
+
+quantile (VT70$NO3_NO2, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,200)
+VT70_NO3 <- okokyst_plot(data = VT70, varname = "NO3_NO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits =grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]),limits=grenser, colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT70_NO3
+
+ggsave ("Figures/VT70/VT70_NO3.png", dpi=500, width = 8, height = 3)
+ 
+```
+#### VT70 NH4
+```{r}
+
+quantile (VT70$NH4, na.rm = T)
+
+# med punkter
+grenser <- c(0,80)
+
+VT70_NH4 <- okokyst_plot(data = VT70, varname = "NH4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+
+VT70_NH4
+
+ggsave ("Figures/VT70/VT70_NH4.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+####
+
+
+## 3. Combine figures (with patchwork library)
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+Nitrogen <- VT70_TOTN +  VT70_NO3 + VT70_NH4 + plot_layout(ncol = 1, width = 8, height =6)
+plot (Nitrogen)
+  ggsave("Figures/VT70/VT70_nitrogen_panel_test.png", plot = Nitrogen,  width = 8, height = 6)
+  
+```
+
+####VT70 PO4
+
+```{r}
+
+quantile (VT70$PO4, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VT70_PO4 <- okokyst_plot(data = VT70, varname = "PO4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+ 
+                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+
+VT70_PO4
+
+#ggsave ("Figures/VT70/VT70_PO4.png", dpi=500, , width = 8, height = 3)
+```
+
+####VT70 TOTP
+```{r}
+quantile (VT70$TOTP, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VT70_TOTP <- okokyst_plot(data = VT70, varname = "TOTP", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTP", colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT70_TOTP
+
+#ggsave ("Figures/VT70/VT70_TOTP.png", dpi=500, width = 8, height = 3)
+```
+
+
+####VT70 SIO2
+
+```{r}
+
+quantile (VT70$SIO2, na.rm = T)
+rm
+# med punkter
+grenser <- c(0,900)
+VT70_SIO2 <- okokyst_plot(data = VT70, varname = "SIO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
+                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT70_SIO2
+
+#ggsave ("Figures/VT70/VT70_SIO2.png", dpi=500, width = 8, height = 3)
+
+```
+
+##cOMBINE 
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+VT70_fosfat_Si <- VT70_TOTP +  VT70_PO4 + VT70_SIO2 +  plot_layout(ncol = 1,  width = 8, height = 6)
+plot (VT70_fosfat_Si)
+ggsave("Figures/VT70/VT70_fosfat_Si_panel.png", plot = VT70_fosfat_Si,  width = 8, height = 6)
+```
+  
+```
+#### VT70 klfa
+```{r}
+quantile (VT70$KlfA, na.rm = T)
+
+# med punkter
+grenser <- c(0,5)
+VT70_KlfA <- okokyst_plot(data = VT70, varname = "KlfA", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                      scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT70_KlfA 
+
+ggsave ("Figures/VT70/VT70_KlfA.png" , width = 8, height = 3)
+```
+
+
+
+#### VT74 TOTN
+```{r}
+
+# check range, can be set automatically, but I often found the plot looks nicer if you set manually
+quantile(VR48$TOTN, na.rm = T)
+
+# with colored points and date label every 2nd month (depends on length of the timeseries for the station)
+# NB! here I set the labels = null (compare with VT71 below), because I want to have them on top of eachother in a panel (see 3. Combine figures below)
+
+grenser <- c(0,500)
+VT74_TOTN <- okokyst_plot(data = VT74, varname = "TOTN", ctd_variable = F,
+                   colored_points = T, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTN", colours = jet.colors(20), limits= grenser, breaks = c(100,200,300,400), oob=squish) +
+                    scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT74_TOTN
+
+#ggsave ("Figures/VT74/VT74_TOTN.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+
+#### VT74 NO3
+```{r}
+
+quantile (VT74$NO3_NO2, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,200)
+VT74_NO3 <- okokyst_plot(data = VT74, varname = "NO3_NO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits =grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT74_NO3
+
+#ggsave ("Figures/VT74/VT74_NO3.png", dpi=500, width = 8, height = 3)
+ 
+```
+#### VT74 NH4
+```{r}
+
+quantile (VT74$NH4, na.rm = T)
+
+# med punkter
+grenser <- c(0,80)
+VT74_NH4 <- okokyst_plot(data = VT74, varname = "NH4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT74_NH4
+
+#ggsave ("Figures/VT74/VT74_NH4.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+####
+
+
+## 3. Combine figures (with patchwork library)
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+Nitrogen <- VT74_TOTN +  VT74_NO3 + VT74_NH4 + plot_layout(ncol = 1, width = 8, height =6)
+plot (Nitrogen)
+  ggsave("Figures/VT74/VT74_nitrogen_panel_test.png", plot = Nitrogen,  width = 8, height = 6)
+  
+```
+
+####VT74 PO4
+
+```{r}
+
+quantile (VT74$PO4, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VT74_PO4 <- okokyst_plot(data = VT74, varname = "PO4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+ 
+                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+
+VT74_PO4
+
+#ggsave ("Figures/VT74/VT74_PO4.png", dpi=500, , width = 8, height = 3)
+```
+
+####VT74 TOTP
+```{r}
+quantile (VT74$TOTP, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VT74_TOTP <- okokyst_plot(data = VT74, varname = "TOTP", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTP", colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VT74_TOTP
+
+#ggsave ("Figures/VT74/VT74_TOTP.png", dpi=500, width = 8, height = 3)
+```
+
+
+####VT74 SIO2
+
+```{r}
+
+quantile (VT74$SIO2, na.rm = T)
+rm
+# med punkter
+grenser <- c(0,900)
+VT74_SIO2 <- okokyst_plot(data = VT74, varname = "SIO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
+                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT74_SIO2
+
+#ggsave ("Figures/VT74/VT74_SIO2.png", dpi=500, width = 8, height = 3)
+
+```
+
+##cOMBINE 
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+VT74_fosfat_Si <- VT74_TOTP +  VT74_PO4 + VT74_SIO2 +  plot_layout(ncol = 1,  width = 8, height = 6)
+plot (VT74_fosfat_Si)
+ggsave("Figures/VT74/VT74_fosfat_Si_panel.png", plot = VT74_fosfat_Si,  width = 8, height = 6)
+```
+  
+```
+#### VT74 klfa
+```{r}
+quantile (VT74$KlfA, na.rm = T)
+
+# med punkter
+grenser <- c(0,5)
+VT74_KlfA <- okokyst_plot(data = VT74, varname = "KlfA", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                      scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VT74_KlfA 
+
+ggsave ("Figures/VT74/VT74_KlfA.png" , width = 8, height = 3)
+```
+
+
+
+#### VR49 TOTN
+```{r}
+
+# check range, can be set automatically, but I often found the plot looks nicer if you set manually
+quantile(VR48$TOTN, na.rm = T)
+
+# with colored points and date label every 2nd month (depends on length of the timeseries for the station)
+# NB! here I set the labels = null (compare with VT71 below), because I want to have them on top of eachother in a panel (see 3. Combine figures below)
+
+grenser <- c(0,500)
+VR49_TOTN <- okokyst_plot(data = VR49, varname = "TOTN", ctd_variable = F,
+                   colored_points = T, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTN", colours = jet.colors(20), limits= grenser, breaks = c(100,200,300,400), oob=squish) +
+                    scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VR49_TOTN
+
+#ggsave ("Figures/VR49/VR49_TOTN.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+
+#### VR49 NO3
+```{r}
+
+quantile (VR49$NO3_NO2, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,200)
+VR49_NO3 <- okokyst_plot(data = VR49, varname = "NO3_NO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits =grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VR49_NO3
+
+#ggsave ("Figures/VR49/VR49_NO3.png", dpi=500, width = 8, height = 3)
+ 
+```
+#### VR49 NH4
+```{r}
+
+quantile (VR49$NH4, na.rm = T)
+
+# med punkter
+grenser <- c(0,80)
+VR49_NH4 <- okokyst_plot(data = VR49, varname = "NH4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VR49_NH4
+
+#ggsave ("Figures/VR49/VR49_NH4.png", dpi=500, width = 8, height = 3)
+
+
+```
+
+
+####
+
+
+## 3. Combine figures (with patchwork library)
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+Nitrogen <- VR49_TOTN +  VR49_NO3 + VR49_NH4 + plot_layout(ncol = 1, width = 8, height =6)
+plot (Nitrogen)
+  ggsave("Figures/VR49/VR49_nitrogen_panel_test.png", plot = Nitrogen,  width = 8, height = 6)
+  
+```
+
+####VR49 PO4
+
+```{r}
+
+quantile (VR49$PO4, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VR49_PO4 <- okokyst_plot(data = VR49, varname = "PO4", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+ 
+                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+
+VR49_PO4
+
+#ggsave ("Figures/VR49/VR49_PO4.png", dpi=500, , width = 8, height = 3)
+```
+
+####VR49 TOTP
+```{r}
+quantile (VR49$TOTP, na.rm = T)
+
+# med punkter
+
+grenser <- c(0,60)
+VR49_TOTP <- okokyst_plot(data = VR49, varname = "TOTP", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn("TOTP", colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
+                      scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+
+VR49_TOTP
+
+#ggsave ("Figures/VR49/VR49_TOTP.png", dpi=500, width = 8, height = 3)
+```
+
+
+####VR49 SIO2
+
+```{r}
+
+quantile (VR49$SIO2, na.rm = T)
+rm
+# med punkter
+grenser <- c(0,900)
+VR49_SIO2 <- okokyst_plot(data = VR49, varname = "SIO2", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                    scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
+                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VR49_SIO2
+
+#ggsave ("Figures/VR49/VR49_SIO2.png", dpi=500, width = 8, height = 3)
+
+```
+
+##cOMBINE 
+```{r}
+# combine figures, here combine two NO3 for different stations
+#NB can of curse combine different variables for one station as well 
+VR49_fosfat_Si <- VR49_TOTP +  VR49_PO4 + VR49_SIO2 +  plot_layout(ncol = 1,  width = 8, height = 6)
+plot (VR49_fosfat_Si)
+ggsave("Figures/VR49/VR49_fosfat_Si_panel.png", plot = VR49_fosfat_Si,  width = 8, height = 6)
+```
+  
+```
+#### VR49 klfa
+```{r}
+quantile (VR49$KlfA, na.rm = T)
+
+# med punkter
+grenser <- c(0,5)
+VR49_KlfA <- okokyst_plot(data = VR49, varname = "KlfA", ctd_variable = FALSE,
+                   colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
+                      scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
+                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+VR49_KlfA 
+
+ggsave ("Figures/VR49/VR49_KlfA.png" , width = 8, height = 3)
+```
+
+
+
+
 
