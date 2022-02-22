@@ -16,9 +16,11 @@ library(purrr)
 #               Default value = 21, i.e. 21 days
 #               If there number of days between two observation dates is > 2*max_timediff, there will be a white "break"  
 
+
+
 okokyst_make_plotdata <- function(data, varname, 
                                   gam = FALSE, gam_k = 20, linear = TRUE,
-                                  nx = 100, ny = 100, max_timediff = 21){
+                                  nx = 100, ny = 100, max_timediff = 30){
   
   data <- as.data.frame(data)
   if (!("Time" %in% names(data)) & !("Date" %in% names(data)))
@@ -86,7 +88,7 @@ okokyst_plot <- function(data, varname, ctd_variable = FALSE, title = "",
                          binwidth = 1, limits = c(NA,NA), color_ctdtime = "black", 
                          gam = FALSE, gam_k = 20, linear = TRUE,
                          nx = 200, ny = 200, 
-                         max_timediff = 21,                
+                         max_timediff = 30,                
                          colored_points = TRUE, colored_points_size = 0.1,
                          colored_points_rim = FALSE,
                          reverse_colors = FALSE,
@@ -139,7 +141,7 @@ okokyst_plot <- function(data, varname, ctd_variable = FALSE, title = "",
     gg <- gg + 
       geom_point(data = data, aes(Time, Depth, fill = .data[[varname]]), 
                  pch = 21, size = colored_points_size) +
-      scale_color_gradientn(varname, colours = fields::tim.colors(16), limits = limits)
+      scale_color_gradientn(varname,colours = fields::tim.colors(16), limits = limits)
   }
   if (title != "")
     gg <- gg + ggtitle(title)
@@ -161,7 +163,7 @@ okokyst_plot <- function(data, varname, ctd_variable = FALSE, title = "",
 # For times_smooth number i, return
 #  maximum depth for all data within 15 days  
 # Assume that variables z, Time2 and Depth exists in both data sets
-get_maxdepth <- function(i, max_timediff = 21, obsdata, smoothdata){
+get_maxdepth <- function(i, max_timediff = 30, obsdata, smoothdata){
   data_maxdepth <- obsdata %>% 
     group_by(Time2) %>%
     summarise(Max_depth = max(Depth), .groups = 'drop')
