@@ -995,7 +995,7 @@ VT70_TOTN <- okokyst_plot(data = VT70, varname = "TOTN", ctd_variable = F,
 
 VT70_TOTN
 
-ggsave ("Figures/VT70/VT70_TOTN.png", dpi=500, width = 8, height = 3)
+#ggsave ("Figures/VT70/VT70_TOTN.png", dpi=500, width = 8, height = 3)
 
 
 
@@ -1151,7 +1151,7 @@ ggsave ("Figures/VT70/VT70_KlfA.png" , width = 8, height = 3)
 ```{r}
 
 # check range, can be set automatically, but I often found the plot looks nicer if you set manually
-quantile(VR48$TOTN, na.rm = T)
+quantile(VT74$TOTN, na.rm = T)
 
 # with colored points and date label every 2nd month (depends on length of the timeseries for the station)
 # NB! here I set the labels = null (compare with VT71 below), because I want to have them on top of eachother in a panel (see 3. Combine figures below)
@@ -1181,7 +1181,7 @@ quantile (VT74$NO3_NO2, na.rm = T)
 grenser <- c(0,200)
 VT74_NO3 <- okokyst_plot(data = VT74, varname = "NO3_NO2", ctd_variable = FALSE,
                    colored_points = TRUE, limits =grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
-                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
+                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]),limit=grenser, colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
 
 VT74_NO3
