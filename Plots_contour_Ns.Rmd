@@ -67,7 +67,7 @@ rgb.palette <- colorRampPalette(colors)
 
 #dir("Datasett")
 
-df <- read.delim ("Datasett/OKOKYST_data_cleaned_Ns_test.txt")
+df <- read.delim ("Datasett/OKOKYST_data_cleaned_Ns.txt")
 
 #str(df)
 
@@ -212,7 +212,7 @@ quantile (VR48$NO3_NO2, na.rm = T)
 grenser <- c(0,200)
 VR48_NO3 <- okokyst_plot(data = VR48, varname = "NO3_NO2", ctd_variable = FALSE,
                    colored_points = TRUE, limits =grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
-                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
+                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), limits=grenser, colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
 
 VR48_NO3
@@ -320,7 +320,7 @@ plot (VR48_fosfat_Si)
 ggsave("Figures/VR48/VR48_fosfat_Si_panel.png", plot = VR48_fosfat_Si,  width = 8, height = 6)
 ```
   
-```
+
 #### VR48 klfa
 ```{r}
 quantile (VR48$KlfA, na.rm = T)
@@ -480,8 +480,8 @@ VT8_fosfat_Si <- VT8_TOTP +  VT8_PO4 + VT8_SIO2 +  plot_layout(ncol = 1,  width 
 plot (VT8_fosfat_Si)
 ggsave("Figures/VT8/VT8_fosfat_Si_panel.png", plot = VT8_fosfat_Si,  width = 8, height = 6)
 ```
-  
-```
+
+
 #### VT8 klfa
 ```{r}
 quantile (VT8$KlfA, na.rm = T)
@@ -641,7 +641,7 @@ plot (VR49_fosfat_Si)
 ggsave("Figures/VR49/VR49_fosfat_Si_panel.png", plot = VR49_fosfat_Si,  width = 8, height = 6)
 ```
   
-```
+
 #### VR49 klfa
 ```{r}
 quantile (VR49$KlfA, na.rm = T)
@@ -800,7 +800,7 @@ plot (VT16_fosfat_Si)
 ggsave("Figures/VT16/VT16_fosfat_Si_panel.png", plot = VT16_fosfat_Si,  width = 8, height = 6)
 ```
   
-```
+  
 #### VT16 klfa
 ```{r}
 quantile (VT16$KlfA, na.rm = T)
@@ -961,7 +961,6 @@ plot (VT79_fosfat_Si)
 ggsave("Figures/VT79/VT79_fosfat_Si_panel.png", plot = VT79_fosfat_Si,  width = 8, height = 6)
 ```
   
-```
 #### VT79 klfa
 ```{r}
 quantile (VT79$KlfA, na.rm = T)
@@ -975,6 +974,7 @@ VT79_KlfA <- okokyst_plot(data = VT79, varname = "KlfA", ctd_variable = FALSE,
 VT79_KlfA 
 
 ggsave ("Figures/VT79/VT79_KlfA.png" , width = 8, height = 3)
+
 ```
 
 
@@ -982,7 +982,7 @@ ggsave ("Figures/VT79/VT79_KlfA.png" , width = 8, height = 3)
 ```{r}
 
 # check range, can be set automatically, but I often found the plot looks nicer if you set manually
-quantile(VR48$TOTN, na.rm = T)
+quantile(VT70$TOTN, na.rm = T)
 
 # with colored points and date label every 2nd month (depends on length of the timeseries for the station)
 # NB! here I set the labels = null (compare with VT71 below), because I want to have them on top of eachother in a panel (see 3. Combine figures below)
@@ -996,6 +996,7 @@ VT70_TOTN <- okokyst_plot(data = VT70, varname = "TOTN", ctd_variable = F,
 VT70_TOTN
 
 ggsave ("Figures/VT70/VT70_TOTN.png", dpi=500, width = 8, height = 3)
+
 
 
 ```
@@ -1018,6 +1019,7 @@ VT70_NO3 <- okokyst_plot(data = VT70, varname = "NO3_NO2", ctd_variable = FALSE,
 VT70_NO3
 
 ggsave ("Figures/VT70/VT70_NO3.png", dpi=500, width = 8, height = 3)
+
  
 ```
 #### VT70 NH4
@@ -1039,6 +1041,7 @@ VT70_NH4
 ggsave ("Figures/VT70/VT70_NH4.png", dpi=500, width = 8, height = 3)
 
 
+
 ```
 
 
@@ -1052,6 +1055,7 @@ ggsave ("Figures/VT70/VT70_NH4.png", dpi=500, width = 8, height = 3)
 Nitrogen <- VT70_TOTN +  VT70_NO3 + VT70_NH4 + plot_layout(ncol = 1, width = 8, height =6)
 plot (Nitrogen)
   ggsave("Figures/VT70/VT70_nitrogen_panel_test.png", plot = Nitrogen,  width = 8, height = 6)
+  
   
 ```
 
@@ -1091,6 +1095,7 @@ VT70_TOTP <- okokyst_plot(data = VT70, varname = "TOTP", ctd_variable = FALSE,
 VT70_TOTP
 
 #ggsave ("Figures/VT70/VT70_TOTP.png", dpi=500, width = 8, height = 3)
+
 ```
 
 
@@ -1111,6 +1116,7 @@ VT70_SIO2
 
 #ggsave ("Figures/VT70/VT70_SIO2.png", dpi=500, width = 8, height = 3)
 
+
 ```
 
 ##cOMBINE 
@@ -1120,9 +1126,10 @@ VT70_SIO2
 VT70_fosfat_Si <- VT70_TOTP +  VT70_PO4 + VT70_SIO2 +  plot_layout(ncol = 1,  width = 8, height = 6)
 plot (VT70_fosfat_Si)
 ggsave("Figures/VT70/VT70_fosfat_Si_panel.png", plot = VT70_fosfat_Si,  width = 8, height = 6)
+
 ```
   
-```
+
 #### VT70 klfa
 ```{r}
 quantile (VT70$KlfA, na.rm = T)
@@ -1234,10 +1241,14 @@ VT74_PO4 <- okokyst_plot(data = VT74, varname = "PO4", ctd_variable = FALSE,
 VT74_PO4
 
 #ggsave ("Figures/VT74/VT74_PO4.png", dpi=500, , width = 8, height = 3)
+
+
 ```
 
 ####VT74 TOTP
+
 ```{r}
+
 quantile (VT74$TOTP, na.rm = T)
 
 # med punkter
@@ -1251,6 +1262,7 @@ VT74_TOTP <- okokyst_plot(data = VT74, varname = "TOTP", ctd_variable = FALSE,
 VT74_TOTP
 
 #ggsave ("Figures/VT74/VT74_TOTP.png", dpi=500, width = 8, height = 3)
+
 ```
 
 
@@ -1274,15 +1286,17 @@ VT74_SIO2
 ```
 
 ##cOMBINE 
+
+
 ```{r}
 # combine figures, here combine two NO3 for different stations
 #NB can of curse combine different variables for one station as well 
 VT74_fosfat_Si <- VT74_TOTP +  VT74_PO4 + VT74_SIO2 +  plot_layout(ncol = 1,  width = 8, height = 6)
 plot (VT74_fosfat_Si)
 ggsave("Figures/VT74/VT74_fosfat_Si_panel.png", plot = VT74_fosfat_Si,  width = 8, height = 6)
+
 ```
   
-```
 #### VT74 klfa
 ```{r}
 quantile (VT74$KlfA, na.rm = T)
@@ -1296,6 +1310,7 @@ VT74_KlfA <- okokyst_plot(data = VT74, varname = "KlfA", ctd_variable = FALSE,
 VT74_KlfA 
 
 ggsave ("Figures/VT74/VT74_KlfA.png" , width = 8, height = 3)
+
 ```
 
 
@@ -1304,7 +1319,7 @@ ggsave ("Figures/VT74/VT74_KlfA.png" , width = 8, height = 3)
 ```{r}
 
 # check range, can be set automatically, but I often found the plot looks nicer if you set manually
-quantile(VR48$TOTN, na.rm = T)
+quantile(VR49$TOTN, na.rm = T)
 
 # with colored points and date label every 2nd month (depends on length of the timeseries for the station)
 # NB! here I set the labels = null (compare with VT71 below), because I want to have them on top of eachother in a panel (see 3. Combine figures below)
@@ -1318,6 +1333,7 @@ VR49_TOTN <- okokyst_plot(data = VR49, varname = "TOTN", ctd_variable = F,
 VR49_TOTN
 
 #ggsave ("Figures/VR49/VR49_TOTN.png", dpi=500, width = 8, height = 3)
+
 
 
 ```
@@ -1334,14 +1350,17 @@ quantile (VR49$NO3_NO2, na.rm = T)
 grenser <- c(0,200)
 VR49_NO3 <- okokyst_plot(data = VR49, varname = "NO3_NO2", ctd_variable = FALSE,
                    colored_points = TRUE, limits =grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
-                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]), colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
+                    scale_fill_gradientn(name= expression("NO"[3]* "+ NO"[2]),limits=grenser, colours = jet.colors(16), breaks = c(50,100,150), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
 
 VR49_NO3
 
 #ggsave ("Figures/VR49/VR49_NO3.png", dpi=500, width = 8, height = 3)
+
  
 ```
+
+
 #### VR49 NH4
 ```{r}
 
@@ -1359,6 +1378,7 @@ VR49_NH4
 #ggsave ("Figures/VR49/VR49_NH4.png", dpi=500, width = 8, height = 3)
 
 
+
 ```
 
 
@@ -1372,6 +1392,7 @@ VR49_NH4
 Nitrogen <- VR49_TOTN +  VR49_NO3 + VR49_NH4 + plot_layout(ncol = 1, width = 8, height =6)
 plot (Nitrogen)
   ggsave("Figures/VR49/VR49_nitrogen_panel_test.png", plot = Nitrogen,  width = 8, height = 6)
+  
   
 ```
 
@@ -1394,6 +1415,7 @@ VR49_PO4 <- okokyst_plot(data = VR49, varname = "PO4", ctd_variable = FALSE,
 VR49_PO4
 
 #ggsave ("Figures/VR49/VR49_PO4.png", dpi=500, , width = 8, height = 3)
+
 ```
 
 ####VR49 TOTP
@@ -1411,6 +1433,7 @@ VR49_TOTP <- okokyst_plot(data = VR49, varname = "TOTP", ctd_variable = FALSE,
 VR49_TOTP
 
 #ggsave ("Figures/VR49/VR49_TOTP.png", dpi=500, width = 8, height = 3)
+
 ```
 
 
@@ -1431,6 +1454,7 @@ VR49_SIO2
 
 #ggsave ("Figures/VR49/VR49_SIO2.png", dpi=500, width = 8, height = 3)
 
+
 ```
 
 ##cOMBINE 
@@ -1441,8 +1465,9 @@ VR49_fosfat_Si <- VR49_TOTP +  VR49_PO4 + VR49_SIO2 +  plot_layout(ncol = 1,  wi
 plot (VR49_fosfat_Si)
 ggsave("Figures/VR49/VR49_fosfat_Si_panel.png", plot = VR49_fosfat_Si,  width = 8, height = 6)
 ```
+
   
-```
+
 #### VR49 klfa
 ```{r}
 quantile (VR49$KlfA, na.rm = T)
