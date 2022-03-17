@@ -125,6 +125,7 @@ VR49 <- df_chem %>%
 VR48 <- df_chem %>%
   filter(StationId == "VR48")
 
+
 VT8 <- df_chem %>%
   filter(StationId == "VT8")
 
@@ -234,7 +235,9 @@ grenser <- c(0,500)
 VR48_TOTN <- okokyst_plot(data = VR48, varname = "TOTN", ctd_variable = F,
                    colored_points = T, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn("TOTN", colours = jet.colors(20), limits= grenser, breaks = c(100,200,300,400), oob=squish) +
-                    scale_x_datetime(date_breaks = "2 month", labels =  NULL)
+                    scale_x_datetime(date_breaks = "2 month", labels =  NULL)+
+                   theme(axis.text.x=element_text(size=rel(0.5), angle=90))
+  
 
 VR48_TOTN
 
@@ -274,7 +277,7 @@ VR48_NH4 <- okokyst_plot(data = VR48, varname = "NH4", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR48_NH4
 
 #ggsave ("Figures/VR48/VR48_NH4.png", dpi=500, width = 8, height = 3)
@@ -292,7 +295,7 @@ VR48_NH4
 #NB can of curse combine different variables for one station as well 
 Nitrogen <- VR48_TOTN +  VR48_NO3 + VR48_NH4 + plot_layout(ncol = 1, width = 8, height =6)
 plot (Nitrogen)
-  ggsave("Figures/VR48/VR48_nitrogen_panel_test.png", plot = Nitrogen,  width = 8, height = 6)
+  ggsave("Figures/VR48/VR48_nitrogen_panel_220317.png", plot = Nitrogen,  width = 8, height = 6)
   
 ```
 
@@ -310,7 +313,7 @@ VR48_PO4 <- okokyst_plot(data = VR48, varname = "PO4", ctd_variable = FALSE,
                     scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
  
-                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      #theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 
 VR48_PO4
 
@@ -347,7 +350,7 @@ VR48_SIO2 <- okokyst_plot(data = VR48, varname = "SIO2", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
                        scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR48_SIO2
 
 #ggsave ("Figures/VR48/VR48_SIO2.png", dpi=500, width = 8, height = 3)
@@ -373,7 +376,7 @@ grenser <- c(0,5)
 VR48_KlfA <- okokyst_plot(data = VR48, varname = "KlfA", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                       scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR48_KlfA 
 
 ggsave ("Figures/VR48/VR48_KlfA.png" , width = 8, height = 3)
@@ -435,7 +438,7 @@ VT8_NH4 <- okokyst_plot(data = VT8, varname = "NH4", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT8_NH4
 
 ggsave ("Figures/VT8/VT8_NH4.png", dpi=500, width = 8, height = 3)
@@ -471,7 +474,7 @@ VT8_PO4 <- okokyst_plot(data = VT8, varname = "PO4", ctd_variable = FALSE,
                     scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
  
-                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      #theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 
 VT8_PO4
 
@@ -508,7 +511,7 @@ VT8_SIO2 <- okokyst_plot(data = VT8, varname = "SIO2", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
                        scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT8_SIO2
 
 ggsave ("Figures/VT8/VT8_SIO2.png", dpi=500, width = 8, height = 3)
@@ -534,7 +537,7 @@ grenser <- c(0,5)
 VT8_KlfA <- okokyst_plot(data = VT8, varname = "KlfA", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                       scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT8_KlfA 
 
 ggsave ("Figures/VT8/VT8_KlfA.png" , width = 8, height = 3)
@@ -595,7 +598,7 @@ VR49_NH4 <- okokyst_plot(data = VR49, varname = "NH4", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR49_NH4
 
 ggsave ("Figures/VR49/VR49_NH4.png", dpi=500, width = 8, height = 3)
@@ -631,7 +634,7 @@ VR49_PO4 <- okokyst_plot(data = VR49, varname = "PO4", ctd_variable = FALSE,
                     scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
  
-                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      #theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 
 VR49_PO4
 
@@ -668,7 +671,7 @@ VR49_SIO2 <- okokyst_plot(data = VR49, varname = "SIO2", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
                        scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR49_SIO2
 
 ggsave ("Figures/VR49/VR49_SIO2.png", dpi=500, width = 8, height = 3)
@@ -694,7 +697,7 @@ grenser <- c(0,5)
 VR49_KlfA <- okokyst_plot(data = VR49, varname = "KlfA", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                       scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR49_KlfA 
 
 ggsave ("Figures/VR49/VR49_KlfA.png" , width = 8, height = 3)
@@ -755,7 +758,7 @@ VT16_NH4 <- okokyst_plot(data = VT16, varname = "NH4", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 21, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT16_NH4
 
 ggsave ("Figures/VT16/VT16_NH4.png", dpi=500, width = 8, height = 3)
@@ -791,7 +794,7 @@ VT16_PO4 <- okokyst_plot(data = VT16, varname = "PO4", ctd_variable = FALSE,
                     scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
  
-                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      #theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 
 VT16_PO4
 ggsave ("Figures/VT16/VT16_PO4.png", dpi=500, , width = 8, height = 3)
@@ -827,7 +830,7 @@ VT16_SIO2 <- okokyst_plot(data = VT16, varname = "SIO2", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 21, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
                        scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT16_SIO2
 
 ggsave ("Figures/VT16/VT16_SIO2.png", dpi=500, width = 8, height = 3)
@@ -853,7 +856,7 @@ grenser <- c(0,5)
 VT16_KlfA <- okokyst_plot(data = VT16, varname = "KlfA", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 21, ylabel = F, xlabel = F) +
                       scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT16_KlfA 
 
 #ggsave ("Figures/VT16/VT16_KlfA.png" , width = 8, height = 3)
@@ -915,7 +918,7 @@ VT79_NH4 <- okokyst_plot(data = VT79, varname = "NH4", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 21, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT79_NH4
 
 ggsave ("Figures/VT79/VT79_NH4.png", dpi=500, width = 8, height = 3)
@@ -951,7 +954,7 @@ VT79_PO4 <- okokyst_plot(data = VT79, varname = "PO4", ctd_variable = FALSE,
                     scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
  
-                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      #theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 
 VT79_PO4
 
@@ -988,7 +991,7 @@ VT79_SIO2 <- okokyst_plot(data = VT79, varname = "SIO2", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 21, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
                        scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT79_SIO2
 
 ggsave ("Figures/VT79/VT79_SIO2.png", dpi=500, width = 8, height = 3)
@@ -1013,7 +1016,7 @@ grenser <- c(0,5)
 VT79_KlfA <- okokyst_plot(data = VT79, varname = "KlfA", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 21, ylabel = F, xlabel = F) +
                       scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT79_KlfA 
 
 ggsave ("Figures/VT79/VT79_KlfA.png" , width = 8, height = 3)
@@ -1077,7 +1080,7 @@ VT70_NH4 <- okokyst_plot(data = VT70, varname = "NH4", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
                       scale_x_datetime(date_breaks = "4 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 
 VT70_NH4
 
@@ -1116,7 +1119,7 @@ VT70_PO4 <- okokyst_plot(data = VT70, varname = "PO4", ctd_variable = FALSE,
                     scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
                       scale_x_datetime(date_breaks = "4 month", labels =  NULL)
  
-                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      #theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 
 VT70_PO4
 
@@ -1154,7 +1157,7 @@ VT70_SIO2 <- okokyst_plot(data = VT70, varname = "SIO2", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
                        scale_x_datetime(date_breaks = "4 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT70_SIO2
 
 ggsave ("Figures/VT70/VT70_SIO2.png", dpi=500, width = 8, height = 3)
@@ -1183,7 +1186,7 @@ VT70_KlfA <- okokyst_plot(data = VT70, varname = "KlfA", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                       scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
                        scale_x_datetime(date_breaks = "4 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT70_KlfA 
 
 ggsave ("Figures/VT70/VT70_KlfA_longtimeseries.png" , width = 8, height = 3)
@@ -1244,7 +1247,7 @@ VT74_NH4 <- okokyst_plot(data = VT74, varname = "NH4", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT74_NH4
 
 #ggsave ("Figures/VT74/VT74_NH4.png", dpi=500, width = 8, height = 3)
@@ -1280,7 +1283,7 @@ VT74_PO4 <- okokyst_plot(data = VT74, varname = "PO4", ctd_variable = FALSE,
                     scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
  
-                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      #theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 
 VT74_PO4
 
@@ -1322,7 +1325,7 @@ VT74_SIO2 <- okokyst_plot(data = VT74, varname = "SIO2", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
                        scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT74_SIO2
 
 ggsave ("Figures/VT74/VT74_SIO2.png", dpi=500, width = 8, height = 3)
@@ -1350,7 +1353,7 @@ grenser <- c(0,5)
 VT74_KlfA <- okokyst_plot(data = VT74, varname = "KlfA", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                       scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VT74_KlfA 
 
 ggsave ("Figures/VT74/VT74_KlfA.png" , width = 8, height = 3)
@@ -1416,7 +1419,7 @@ VR49_NH4 <- okokyst_plot(data = VR49, varname = "NH4", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("NH"[4]), limit=grenser, colours = jet.colors(16), breaks = c(20,40,60), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR49_NH4
 
 #ggsave ("Figures/VR49/VR49_NH4.png", dpi=500, width = 8, height = 3)
@@ -1454,7 +1457,7 @@ VR49_PO4 <- okokyst_plot(data = VR49, varname = "PO4", ctd_variable = FALSE,
                     scale_fill_gradientn(name= expression("PO"[4]), colours = jet.colors(16), limits=grenser, breaks = c(10,20,30,40,50), oob=squish) +
                       scale_x_datetime(date_breaks = "2 month", labels =  NULL)
  
-                      #theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      #theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 
 VR49_PO4
 
@@ -1493,7 +1496,7 @@ VR49_SIO2 <- okokyst_plot(data = VR49, varname = "SIO2", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                     scale_fill_gradientn(name= expression("SiO"[2]), colours = jet.colors(16),limits=grenser,breaks = c(200,400,600,800), oob=squish ) +
                        scale_x_datetime(date_breaks = "2 month", date_labels =  "%b %y") +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR49_SIO2
 
 #ggsave ("Figures/VR49/VR49_SIO2.png", dpi=500, width = 8, height = 3)
@@ -1521,7 +1524,7 @@ grenser <- c(0,5)
 VR49_KlfA <- okokyst_plot(data = VR49, varname = "KlfA", ctd_variable = FALSE,
                    colored_points = TRUE, limits = grenser, binwidth = 20, max_timediff = 25, ylabel = F, xlabel = F) +
                       scale_fill_gradientn("KlfA", colours = jet.colors(16),limits=grenser, breaks = c(1,2,3,4), oob=squish) +
-                      theme(axis.text.x=element_text(angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
+                      theme(axis.text.x=element_text(size=rel(1.5), angle=60, hjust=1), plot.title = element_text(hjust = 0.5))
 VR49_KlfA 
 
 ggsave ("Figures/VR49/VR49_KlfA.png" , width = 8, height = 3)
